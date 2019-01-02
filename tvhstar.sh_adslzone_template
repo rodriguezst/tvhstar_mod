@@ -1,0 +1,33 @@
+#!/bin/bash
+cd /home/carlos/tvhstar
+node build/server.js
+#npm run build && npm run start
+cd generated_files
+rm guia.xml.gz
+cat ../header.xml > guia.xml
+cat ../guia.xml >> guia.xml
+gzip -k guia.xml
+#ADSLZONE HD M3U
+mv adslzone.m3u adslzone.m3u.old
+echo "Creating HD M3U from ADSLZONE post..."
+php /var/www/html/download/movistar/adslzone_hd.php > adslzone.m3u
+diff -U 0 adslzone.m3u.old adslzone.m3u > adslzone.diff.txt
+LINES_CHANGED="$(cat adslzone.diff.txt | grep ^@ | wc -l)"
+if [ "${LINES_CHANGED}" = "1" ]; then
+  echo "M3U did not change"
+else
+  echo "M3U was updated"
+  curl -F chat_id="TG_CHAT_ID" -F document=@"adslzone.diff.txt" -F caption="Movistar HD channel list was updated!" https://api.telegram.org/botAPIKEY/sendDocument
+fi
+#ADSLZONE SD M3U
+mv adslzone_sd.m3u adslzone_sd.m3u.old
+echo "Creating SD M3U from ADSLZONE post..."
+php /var/www/html/download/movistar/adslzone_sd.php > adslzone_sd.m3u
+diff -U 0 adslzone_sd.m3u.old adslzone_sd.m3u > adslzone_sd.diff.txt
+LINES_CHANGED="$(cat adslzone_sd.diff.txt | grep ^@ | wc -l)"
+if [ "${LINES_CHANGED}" = "1" ]; then
+  echo "M3U did not change"
+else
+  echo "M3U was updated"
+  curl -F chat_id="TG_CHAT_ID" -F document=@"adslzone_sd.diff.txt" -F caption="Movistar SD channel list was updated!" https://api.telegram.org/botAPIKEY/sendDocument
+fi

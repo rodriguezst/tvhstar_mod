@@ -170,7 +170,7 @@ const utils = {
                 // hora de construir de convertir a JSONTV. 
                 //
                 //
-                let movistar_nombre = pase["$"].cadena;
+                let movistar_nombre = pase["$"].cadena.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
 
                 let channel_id = movistar_nombre.replace(/\s/g,'');
                 let display_name = movistar_nombre;
@@ -247,6 +247,7 @@ const utils = {
                 let subtitulo = pase.titulo[0];
 
                 // Pillo el título
+                /*
                 let lastIndex = pase.descripcion_corta[0].lastIndexOf(':');
                 if (lastIndex !== -1) {
                     let newTitulo = pase.descripcion_corta[0].substr(0, lastIndex);
@@ -257,6 +258,7 @@ const utils = {
                         titulo = newTitulo;
                     }
                 }
+                */
 
 
                 // --------------------------------------------------------------------------
@@ -303,7 +305,7 @@ const utils = {
                 // "switch(true)" abominable que no funciona en otros lenguajes :-)
                 // http://stackoverflow.com/questions/2896626/switch-statement-for-string-matching-in-javascript
                 let str = titulo.toLowerCase();
-                switch (true) {
+                /*switch (true) {
 
                     // Fútbol: partidos
                     case /laliga/.test(str):
@@ -345,7 +347,7 @@ const utils = {
                         break;
                     default:
                         break;
-                }
+                }*/
                 // --------------------------------------------------------------------------
                 //  FIN ZONA PERSONALIZADA !!!
                 // --------------------------------------------------------------------------
@@ -357,6 +359,7 @@ const utils = {
 
                 // Preparo el pase en el nuevo formato
                 //
+                /* OLD VERSION
                 let programme = {
                     "$": {
                         "start": `${programme_start}`,
@@ -394,6 +397,29 @@ const utils = {
                     "category": [
                         {
                             "_": categoria,
+                            "$": {
+                                "lang": langES
+                            }
+                        }
+                    ]
+                };
+                */
+                let programme = {
+                    "$": {
+                        "start": `${programme_start}`,
+                        "channel": channel_id
+                    },
+                    "title": [
+                        {
+                            "_": titulo,
+                            "$": {
+                                "lang": langES
+                            }
+                        }
+                    ],
+                    "desc": [
+                        {
+                            "_": pase.sinopsis_larga[0],
                             "$": {
                                 "lang": langES
                             }
